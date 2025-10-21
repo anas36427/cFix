@@ -1,0 +1,8 @@
+{% extends 'theme/base.html' %}
+{% block content %}
+<div class="p-10 text-center">
+    <h1 class="text-3xl font-bold text-indigo-600">Welcome,STUDENTs
+         {{ user.email }}</h1>
+    <p class="mt-4 text-gray-700">You are logged in as <strong>{{ user.role|title }}</strong>.</p>
+</div>
+{% endblock %}
