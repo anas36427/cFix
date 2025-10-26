@@ -45,3 +45,114 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.college_id})"
+
+
+class Complaint(models.Model):
+    DEPARTMENT_CHOICES = [
+        ('staff', 'Staff/General'),
+        ('provost', 'Provost/Hall Management'),
+        ('dsw', 'DSW/Student Welfare'),
+        ('exam_controller', 'Exam Controller'),
+    ]
+
+    CATEGORY_CHOICES = [
+        ('infrastructure', 'Infrastructure'),
+        ('food', 'Food Services'),
+        ('maintenance', 'Maintenance'),
+        ('security', 'Security'),
+        ('other', 'Other'),
+    ]
+
+    HALL_CHOICES = [
+        # Boys Halls
+        ('aftab', 'Aftab Hall'),
+        ('ambedkar', 'Dr. B.R. Ambedkar Hall'),
+        ('hadi-hasan', 'Hadi Hasan Hall'),
+        ('mohsinul-mulk', 'Mohsinul Mulk Hall'),
+        ('mohd-habib', 'Mohd. Habib Hall'),
+        ('nadeem-tarin', 'Nadeem Tarin Hall'),
+        ('ross-masood', 'Ross Masood Hall'),
+        ('sir-shah-sulaiman', 'Sir Shah Sulaiman Hall'),
+        ('sir-syed-north', 'Sir Syed Hall (North)'),
+        ('sir-syed-south', 'Sir Syed Hall (South)'),
+        ('sir-ziauddin', 'Sir Ziauddin Hall'),
+        ('viqarul-mulk', 'Viqarul Mulk Hall'),
+        # Girls Halls
+        ('abdullah', 'Abdullah Hall'),
+        ('bibi-fatima', 'Bibi Fatima Hall'),
+        ('begum-sultan-jahan', 'Begum Sultan Jahan Hall'),
+        ('begum-azeezun-nisa', 'Begum Azeezun Nisa Hall'),
+        ('indira-gandhi', 'Indira Gandhi Hall'),
+        ('sarojini-naidu', 'Sarojini Naidu Hall'),
+        # Other
+        ('nrsc', 'Non-Resident Students\' Centre (NRSC)'),
+    ]
+
+    PRIORITY_CHOICES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('urgent', 'Urgent'),
+    ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('in-progress', 'In Progress'),
+        ('resolved', 'Resolved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    department = models.CharField(max_length=20, choices=DEPARTMENT_CHOICES, default='staff')
+    hall = models.CharField(max_length=50, choices=HALL_CHOICES)
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending')
+    student = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='complaints')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.title} - {self.student.college_id}"
+
+    class Meta:
+        ordering = ['-created_at']
+
+
+class Application(models.Model):
+    APPLICATION_TYPES = [
+        ('room-change', 'Room Change Request'),
+        ('library-subscription', 'Library Subscription'),
+        ('exam-revaluation', 'Exam Re-evaluation'),
+        ('fee-concession', 'Fee Concession'),
+        ('other', 'Other'),
+    ]
+
+    DEPARTMENTS = [
+        ('dsw', 'Dean of Student Welfare'),
+        ('library', 'Library'),
+        ('examination', 'Examination Controller'),
+        ('accounts', 'Accounts'),
+    ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    application_type = models.CharField(max_length=20, choices=APPLICATION_TYPES)
+    department = models.CharField(max_length=20, choices=DEPARTMENTS)
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending')
+    student = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='applications')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.title} - {self.student.college_id}"
+
+    class Meta:
+        ordering = ['-created_at']

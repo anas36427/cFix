@@ -120,19 +120,9 @@
             }
         };
 
-        // Sample data (In a real app, this would come from Django views)
-        const sampleData = {
-            complaints: [
-                { id: 'C001', title: 'Hostel WiFi Issue', category: 'Infrastructure', status: 'pending', date: '2024-01-15', hall: 'Aftab Hall' },
-                { id: 'C002', title: 'Mess Food Quality', category: 'Food Services', status: 'in-progress', date: '2024-01-14', hall: 'Abdullah Hall' },
-                { id: 'C003', title: 'Library AC Not Working', category: 'Infrastructure', status: 'resolved', date: '2024-01-13', hall: 'Sir Syed Hall (North)' }
-            ],
-            applications: [
-                { id: 'A001', title: 'Room Change Request', category: 'Accommodation', status: 'pending', date: '2024-01-15' },
-                { id: 'A002', title: 'Library Subscription', category: 'Academic', status: 'approved', date: '2024-01-14' },
-                { id: 'A003', title: 'Exam Re-evaluation', category: 'Academic', status: 'rejected', date: '2024-01-13' }
-            ]
-        };
+        // Global data variables
+        let complaintsData = [];
+        let applicationsData = [];
 
         let currentRole = 'student';
         let currentView = 'overview';
@@ -140,8 +130,51 @@
         // Initialize dashboard
         function initDashboard() {
             updateUserInfo();
+            loadData();
             renderNavigation();
             renderContent();
+        }
+
+        // Load data from APIs
+        async function loadData() {
+            try {
+                // Load complaints
+                const complaintsResponse = await fetch('/accounts/complaints/my/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                });
+                const complaintsResult = await complaintsResponse.json();
+                if (complaintsResult.success) {
+                    complaintsData = complaintsResult.complaints;
+                }
+
+                // Load applications
+                const applicationsResponse = await fetch('/accounts/applications/my/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                });
+                const applicationsResult = await applicationsResponse.json();
+                if (applicationsResult.success) {
+                    applicationsData = applicationsResult.applications;
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+
+        // Get CSRF token
+        function getCSRFToken() {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+            return cookieValue || '';
         }
 
         // Update user info in header (Already handled by Django template)
@@ -216,7 +249,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-gray-500 text-sm">Total Complaints</p>
-                                    <p class="text-2xl font-bold text-gray-800">12</p>
+                                    <p class="text-2xl font-bold text-gray-800" id="totalComplaints">${complaintsData.length}</p>
                                 </div>
                                 <div class="bg-red-100 p-3 rounded-full">
                                     <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -230,7 +263,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-gray-500 text-sm">Total Applications</p>
-                                    <p class="text-2xl font-bold text-gray-800">8</p>
+                                    <p class="text-2xl font-bold text-gray-800" id="totalApplications">${applicationsData.length}</p>
                                 </div>
                                 <div class="bg-blue-100 p-3 rounded-full">
                                     <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -244,7 +277,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-gray-500 text-sm">Pending</p>
-                                    <p class="text-2xl font-bold text-yellow-600">5</p>
+                                    <p class="text-2xl font-bold text-yellow-600" id="pendingCount">${complaintsData.filter(c => c.status === 'pending').length + applicationsData.filter(a => a.status === 'pending').length}</p>
                                 </div>
                                 <div class="bg-yellow-100 p-3 rounded-full">
                                     <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -258,7 +291,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-gray-500 text-sm">Resolved</p>
-                                    <p class="text-2xl font-bold text-green-600">15</p>
+                                    <p class="text-2xl font-bold text-green-600" id="resolvedCount">${complaintsData.filter(c => c.status === 'resolved').length + applicationsData.filter(a => a.status === 'approved').length}</p>
                                 </div>
                                 <div class="bg-green-100 p-3 rounded-full">
                                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,7 +306,7 @@
                         <div class="bg-white rounded-lg shadow-md p-6">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Complaints</h3>
                             <div class="space-y-3">
-                                ${sampleData.complaints.slice(0, 3).map(complaint => `
+                                ${complaintsData.slice(0, 3).map(complaint => `
                                     <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                         <div>
                                             <p class="font-medium text-gray-800">${complaint.title}</p>
@@ -290,7 +323,7 @@
                         <div class="bg-white rounded-lg shadow-md p-6">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Applications</h3>
                             <div class="space-y-3">
-                                ${sampleData.applications.slice(0, 3).map(application => `
+                                ${applicationsData.slice(0, 3).map(application => `
                                     <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                         <div>
                                             <p class="font-medium text-gray-800">${application.title}</p>
@@ -322,7 +355,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-gray-700 font-medium mb-2">Complaint Category</label>
-                                    <select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                                    <select name="category" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
                                         <option value="">Select category</option>
                                         <option value="infrastructure">Infrastructure</option>
                                         <option value="food">Food Services</option>
@@ -333,7 +366,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-gray-700 font-medium mb-2">Hall/Hostel</label>
-                                    <select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                                    <select name="hall" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
                                         <option value="">Select hall/hostel</option>
                                         <optgroup label="Boys Halls">
                                             <option value="aftab">Aftab Hall</option>
@@ -366,17 +399,17 @@
 
                             <div>
                                 <label class="block text-gray-700 font-medium mb-2">Complaint Title</label>
-                                <input type="text" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Brief title of your complaint" required>
+                                <input type="text" name="title" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Brief title of your complaint" required>
                             </div>
 
                             <div>
                                 <label class="block text-gray-700 font-medium mb-2">Detailed Description</label>
-                                <textarea rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Provide detailed information about your complaint" required></textarea>
+                                <textarea rows="5" name="description" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Provide detailed information about your complaint" required></textarea>
                             </div>
 
                             <div>
                                 <label class="block text-gray-700 font-medium mb-2">Priority Level</label>
-                                <select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                                <select name="priority" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
                                     <option value="low">Low</option>
                                     <option value="medium" selected>Medium</option>
                                     <option value="high">High</option>
@@ -408,7 +441,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-gray-700 font-medium mb-2">Application Type</label>
-                                    <select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                                    <select name="application_type" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
                                         <option value="">Select application type</option>
                                         <option value="room-change">Room Change Request</option>
                                         <option value="library-subscription">Library Subscription</option>
@@ -419,7 +452,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-gray-700 font-medium mb-2">Department</label>
-                                    <select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                                    <select name="department" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
                                         <option value="">Select department</option>
                                         <option value="dsw">Dean of Student Welfare</option>
                                         <option value="library">Library</option>
@@ -431,13 +464,12 @@
 
                             <div>
                                 <label class="block text-gray-700 font-medium mb-2">Application Title</label>
-                                <input type="text" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Brief title of your application" required>
+                                <input type="text" name="title" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Brief title of your application" required>
                             </div>
 
                             <div>
                                 <label class="block text-gray-700 font-medium mb-2">Detailed Description</label>
-                                <textarea rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Provide detailed information about your application" required></textarea>
-                            </div>
+                                <textarea rows="5" name="description" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Provide detailed information about your application" required></textarea>
 
                             <div>
                                 <label class="block text-gray-700 font-medium mb-2">Supporting Documents</label>
@@ -502,7 +534,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    ${sampleData.complaints.map(complaint => `
+                                    ${complaintsData.map(complaint => `
                                         <tr class="hover:bg-gray-50">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${complaint.id}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${complaint.title}</td>
@@ -574,7 +606,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    ${sampleData.applications.map(application => `
+                                    ${applicationsData.map(application => `
                                         <tr class="hover:bg-gray-50">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${application.id}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${application.title}</td>
@@ -599,8 +631,13 @@
             `;
         }
 
-        // Render status tracker (placeholder)
+        // Render status tracker
         function renderStatusTracker() {
+            const allItems = [
+                ...complaintsData.map(c => ({ ...c, type: 'complaint', hall: c.hall })),
+                ...applicationsData.map(a => ({ ...a, type: 'application', department: a.department }))
+            ].sort((a, b) => new Date(b.date) - new Date(a.date));
+
             return `
                 <div class="fade-in">
                     <div class="mb-8">
@@ -608,10 +645,63 @@
                         <p class="text-gray-600">Track the status of your complaints and applications</p>
                     </div>
                     <div class="bg-white rounded-lg shadow-md p-8">
-                        <p class="text-gray-600">Status tracker functionality will be implemented here.</p>
+                        ${allItems.length === 0 ? '<p class="text-gray-600">No complaints or applications found.</p>' : `
+                            <div class="space-y-4">
+                                ${allItems.map(item => `
+                                    <div class="border border-gray-200 rounded-lg p-4">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="flex items-center space-x-2">
+                                                <span class="px-2 py-1 bg-${item.type === 'complaint' ? 'red' : 'blue'}-100 text-${item.type === 'complaint' ? 'red' : 'blue'}-800 text-xs font-medium rounded">
+                                                    ${item.type === 'complaint' ? 'Complaint' : 'Application'}
+                                                </span>
+                                                <span class="text-sm font-medium text-gray-900">${item.title}</span>
+                                            </div>
+                                            <span class="px-3 py-1 rounded-full text-xs font-medium status-${item.status === 'approved' ? 'resolved' : item.status}">
+                                                ${item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                                            </span>
+                                        </div>
+                                        <div class="text-sm text-gray-600 mb-2">
+                                            ${item.category} • ${item.date}
+                                            ${item.type === 'complaint' ? ` • ${item.hall}` : ` • ${item.department}`}
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-${item.status === 'resolved' || item.status === 'approved' ? 'green' : item.status === 'in-progress' ? 'yellow' : 'gray'}-500 h-2 rounded-full" style="width: ${getProgressWidth(item.status)}%"></div>
+                                        </div>
+                                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                            <span>Submitted</span>
+                                            <span>${getStatusText(item.status)}</span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
                     </div>
                 </div>
             `;
+        }
+
+        // Helper function for progress width
+        function getProgressWidth(status) {
+            switch(status) {
+                case 'pending': return 25;
+                case 'in-progress': return 50;
+                case 'resolved':
+                case 'approved': return 100;
+                case 'rejected': return 100;
+                default: return 0;
+            }
+        }
+
+        // Helper function for status text
+        function getStatusText(status) {
+            switch(status) {
+                case 'pending': return 'Under Review';
+                case 'in-progress': return 'In Progress';
+                case 'resolved':
+                case 'approved': return 'Completed';
+                case 'rejected': return 'Rejected';
+                default: return 'Unknown';
+            }
         }
 
         // Event listeners
@@ -645,7 +735,64 @@
             }
         });
 
-        // Form submissions (placeholder - would be implemented with AJAX)
+        // Form submissions with AJAX
+        document.addEventListener('submit', async function(e) {
+            if (e.target.id === 'complaintForm') {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+
+                try {
+                    const response = await fetch('/accounts/complaints/submit/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken()
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        alert(result.message);
+                        loadData(); // Reload data
+                        switchView('my-complaints'); // Switch to complaints view
+                    } else {
+                        alert('Error: ' + JSON.stringify(result.errors));
+                    }
+                } catch (error) {
+                    console.error('Error submitting complaint:', error);
+                    alert('An error occurred while submitting your complaint.');
+                }
+            }
+
+            if (e.target.id === 'applicationForm') {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+
+                try {
+                    const response = await fetch('/accounts/applications/submit/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken()
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        alert(result.message);
+                        loadData(); // Reload data
+                        switchView('my-applications'); // Switch to applications view
+                    } else {
+                        alert('Error: ' + JSON.stringify(result.errors));
+                    }
+                } catch (error) {
+                    console.error('Error submitting application:', error);
+                    alert('An error occurred while submitting your application.');
+                }
+            }
+        });
 
         // Initialize dashboard on page load
         document.addEventListener('DOMContentLoaded', initDashboard);

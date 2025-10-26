@@ -6,6 +6,9 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name = 'home'),
-    path('api/', include('seeFix.urls')),
+    path('api/', include([
+        path('', include('seeFix.urls')),
+        path('', include('accounts.urls')),
+    ])),
     path('accounts/', include('accounts.urls')),
 ]

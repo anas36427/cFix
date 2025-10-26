@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.http import JsonResponse
 from functools import wraps
 
 def role_required(allowed_roles=None):
@@ -10,7 +10,14 @@ def role_required(allowed_roles=None):
         def _wrapped_view(request, *args, **kwargs):
             user = request.user
             if not user.is_authenticated:
-                # Redirect or deny if not logged in
+                # For API endpoints, return JSON response
+                if request.path.startswith('/api/'):
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'Authentication required.'
+                    }, status=401)
+                # For regular views, render error page
+                from django.shortcuts import render
                 return render(request, 'errors/403.html', status=403)
 
             # Allow superuser always
@@ -22,6 +29,12 @@ def role_required(allowed_roles=None):
                 return view_func(request, *args, **kwargs)
 
             # If none match, deny access
+            if request.path.startswith('/api/'):
+                return JsonResponse({
+                    'success': False,
+                    'message': 'You do not have permission to access this resource.'
+                }, status=403)
+            from django.shortcuts import render
             return render(request, 'errors/403.html', status=403)
         return _wrapped_view
     return decorator

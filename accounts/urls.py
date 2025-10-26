@@ -12,5 +12,21 @@ urlpatterns = [
     path('dashboard/provost/', views.provost_dashboard, name='provost_dashboard'),
     path('dashboard/dsw/', views.dsw_dashboard, name='dsw_dashboard'),
     path('dashboard/exam/', views.exam_dashboard, name='exam_dashboard'),
+
+    # Complaint system URLs
+    path('complaints/submit/', views.submit_complaint, name='submit_complaint'),
+    path('complaints/my/', views.my_complaints, name='my_complaints'),
+    path('complaints/all/', views.all_complaints, name='all_complaints'),
+    path('complaints/update-status/', views.update_complaint_status, name='update_complaint_status'),
+    path('complaints/<int:complaint_id>/', views.complaint_details, name='complaint_details'),
+
+    # Application system URLs
+    path('applications/submit/', views.submit_application, name='submit_application'),
+    path('applications/my/', views.my_applications, name='my_applications'),
+
+    # API endpoints
+    path('complaints/', views.api_all_complaints, name='api_complaints'),
+    path('complaints/<str:complaint_id>/', views.complaint_details, name='api_complaint_details'),
 ]
+
 
