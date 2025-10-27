@@ -208,6 +208,16 @@
         // Switch view
         function switchView(viewId) {
             currentView = viewId;
+
+            // Reset filters when switching to list views
+            if (viewId === 'my-complaints') {
+                complaintCategoryFilter = '';
+                complaintStatusFilter = '';
+            } else if (viewId === 'my-applications') {
+                applicationCategoryFilter = '';
+                applicationStatusFilter = '';
+            }
+
             renderNavigation();
             renderContent();
         }
