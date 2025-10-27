@@ -133,6 +133,10 @@
         let applicationCategoryFilter = '';
         let applicationStatusFilter = '';
 
+        // Search variables
+        let complaintSearchQuery = '';
+        let applicationSearchQuery = '';
+
         // Initialize dashboard
         function initDashboard() {
             updateUserInfo();
@@ -154,7 +158,11 @@
                 });
                 const complaintsResult = await complaintsResponse.json();
                 if (complaintsResult.success) {
-                    complaintsData = complaintsResult.complaints;
+                    complaintsData = complaintsResult.complaints.map(complaint => ({
+                        ...complaint,
+                        category: complaint.category.toLowerCase().replace(' ', '-'),
+                        hall: complaint.hall.toLowerCase().replace(' ', '-')
+                    }));
                 }
 
                 // Load applications
@@ -167,7 +175,10 @@
                 });
                 const applicationsResult = await applicationsResponse.json();
                 if (applicationsResult.success) {
-                    applicationsData = applicationsResult.applications;
+                    applicationsData = applicationsResult.applications.map(application => ({
+                        ...application,
+                        category: application.category.toLowerCase().replace(' ', '-')
+                    }));
                 }
             } catch (error) {
                 console.error('Error loading data:', error);
@@ -209,26 +220,32 @@
         function switchView(viewId) {
             currentView = viewId;
 
-            // Reset filters when switching to list views
+            // Reset filters and search when switching to list views
             if (viewId === 'my-complaints') {
                 complaintCategoryFilter = '';
                 complaintStatusFilter = '';
+                complaintSearchQuery = '';
                 // Update display after reset
                 setTimeout(() => {
                     const categoryDisplay = document.getElementById('complaintCategoryDisplay');
                     const statusDisplay = document.getElementById('complaintStatusDisplay');
+                    const searchInput = document.getElementById('complaintSearchInput');
                     if (categoryDisplay) categoryDisplay.textContent = 'All Categories';
                     if (statusDisplay) statusDisplay.textContent = 'All Status';
+                    if (searchInput) searchInput.value = '';
                 }, 100);
             } else if (viewId === 'my-applications') {
                 applicationCategoryFilter = '';
                 applicationStatusFilter = '';
+                applicationSearchQuery = '';
                 // Update display after reset
                 setTimeout(() => {
                     const categoryDisplay = document.getElementById('applicationCategoryDisplay');
                     const statusDisplay = document.getElementById('applicationStatusDisplay');
+                    const searchInput = document.getElementById('applicationSearchInput');
                     if (categoryDisplay) categoryDisplay.textContent = 'All Categories';
                     if (statusDisplay) statusDisplay.textContent = 'All Status';
+                    if (searchInput) searchInput.value = '';
                 }, 100);
             }
 
@@ -518,7 +535,11 @@
             const filteredComplaints = complaintsData.filter(complaint => {
                 const matchesCategory = !complaintCategoryFilter || complaint.category === complaintCategoryFilter;
                 const matchesStatus = !complaintStatusFilter || complaint.status === complaintStatusFilter;
-                return matchesCategory && matchesStatus;
+                const matchesSearch = !complaintSearchQuery ||
+                    complaint.title.toLowerCase().includes(complaintSearchQuery.toLowerCase()) ||
+                    complaint.description.toLowerCase().includes(complaintSearchQuery.toLowerCase()) ||
+                    complaint.category.toLowerCase().includes(complaintSearchQuery.toLowerCase());
+                return matchesCategory && matchesStatus && matchesSearch;
             });
 
             return `
@@ -534,11 +555,11 @@
                                 <div class="flex space-x-4">
                                     <select id="complaintCategoryFilter" onchange="updateComplaintFilters()" class="p-2 border border-gray-300 rounded-lg">
                                         <option value="">All Categories</option>
-                                        <option value="Infrastructure">Infrastructure</option>
-                                        <option value="Food Services">Food Services</option>
-                                        <option value="Maintenance">Maintenance</option>
-                                        <option value="Security">Security</option>
-                                        <option value="Other">Other</option>
+                                        <option value="infrastructure">Infrastructure</option>
+                                        <option value="food-services">Food Services</option>
+                                        <option value="maintenance">Maintenance</option>
+                                        <option value="security">Security</option>
+                                        <option value="other">Other</option>
                                     </select>
                                     <select id="complaintStatusFilter" onchange="updateComplaintFilters()" class="p-2 border border-gray-300 rounded-lg">
                                         <option value="">All Status</option>
@@ -549,8 +570,8 @@
                                     </select>
                                 </div>
                                 <div class="flex space-x-2">
-                                    <input type="search" placeholder="Search complaints..." class="p-2 border border-gray-300 rounded-lg">
-                                    <button class="px-4 py-2 amu-green text-white rounded-lg hover:bg-green-800 transition-colors">Search</button>
+                                    <input type="search" id="complaintSearchInput" placeholder="Search complaints..." class="p-2 border border-gray-300 rounded-lg">
+                                    <button id="complaintSearchButton" class="px-4 py-2 amu-green text-white rounded-lg hover:bg-green-800 transition-colors">Search</button>
                                 </div>
                             </div>
                             <div class="mt-3 text-sm text-gray-600">
@@ -603,7 +624,11 @@
             const filteredApplications = applicationsData.filter(application => {
                 const matchesCategory = !applicationCategoryFilter || application.category === applicationCategoryFilter;
                 const matchesStatus = !applicationStatusFilter || application.status === applicationStatusFilter;
-                return matchesCategory && matchesStatus;
+                const matchesSearch = !applicationSearchQuery ||
+                    application.title.toLowerCase().includes(applicationSearchQuery.toLowerCase()) ||
+                    application.description.toLowerCase().includes(applicationSearchQuery.toLowerCase()) ||
+                    application.category.toLowerCase().includes(applicationSearchQuery.toLowerCase());
+                return matchesCategory && matchesStatus && matchesSearch;
             });
 
             return `
@@ -619,11 +644,11 @@
                                 <div class="flex space-x-4">
                                     <select id="applicationCategoryFilter" onchange="updateApplicationFilters()" class="p-2 border border-gray-300 rounded-lg">
                                         <option value="">All Categories</option>
-                                        <option value="Room Change">Room Change Request</option>
-                                        <option value="Library Subscription">Library Subscription</option>
-                                        <option value="Exam Revaluation">Exam Re-evaluation</option>
-                                        <option value="Fee Concession">Fee Concession</option>
-                                        <option value="Other">Other</option>
+                                        <option value="room-change-request">Room Change Request</option>
+                                        <option value="library-subscription">Library Subscription</option>
+                                        <option value="exam-re-evaluation">Exam Re-evaluation</option>
+                                        <option value="fee-concession">Fee Concession</option>
+                                        <option value="other">Other</option>
                                     </select>
                                     <select id="applicationStatusFilter" onchange="updateApplicationFilters()" class="p-2 border border-gray-300 rounded-lg">
                                         <option value="">All Status</option>
@@ -633,8 +658,8 @@
                                     </select>
                                 </div>
                                 <div class="flex space-x-2">
-                                    <input type="search" placeholder="Search applications..." class="p-2 border border-gray-300 rounded-lg">
-                                    <button class="px-4 py-2 amu-green text-white rounded-lg hover:bg-green-800 transition-colors">Search</button>
+                                    <input type="search" id="applicationSearchInput" placeholder="Search applications..." class="p-2 border border-gray-300 rounded-lg">
+                                    <button id="applicationSearchButton" class="px-4 py-2 amu-green text-white rounded-lg hover:bg-green-800 transition-colors">Search</button>
                                 </div>
                             </div>
                             <div class="mt-3 text-sm text-gray-600">
@@ -1113,6 +1138,12 @@
             renderContent(); // Re-render the current view
         }
 
+        // Update complaint search
+        function updateComplaintSearch() {
+            complaintSearchQuery = document.getElementById('complaintSearchInput').value.trim();
+            renderContent(); // Re-render the current view
+        }
+
         // Update application filters
         function updateApplicationFilters() {
             applicationCategoryFilter = document.getElementById('applicationCategoryFilter').value;
@@ -1134,8 +1165,32 @@
             renderContent(); // Re-render the current view
         }
 
+        // Update application search
+        function updateApplicationSearch() {
+            applicationSearchQuery = document.getElementById('applicationSearchInput').value.trim();
+            renderContent(); // Re-render the current view
+        }
+
         // Initialize dashboard on page load
-        document.addEventListener('DOMContentLoaded', initDashboard);
+        document.addEventListener('DOMContentLoaded', function() {
+            initDashboard();
+
+            // Add event listeners for search inputs
+            const complaintSearchInput = document.getElementById('complaintSearchInput');
+            const complaintSearchButton = document.getElementById('complaintSearchButton');
+            const applicationSearchInput = document.getElementById('applicationSearchInput');
+            const applicationSearchButton = document.getElementById('applicationSearchButton');
+
+            if (complaintSearchInput && complaintSearchButton) {
+                complaintSearchInput.addEventListener('input', updateComplaintSearch);
+                complaintSearchButton.addEventListener('click', updateComplaintSearch);
+            }
+
+            if (applicationSearchInput && applicationSearchButton) {
+                applicationSearchInput.addEventListener('input', updateApplicationSearch);
+                applicationSearchButton.addEventListener('click', updateApplicationSearch);
+            }
+        });
     </script>
 </div>
 {% endblock %}
