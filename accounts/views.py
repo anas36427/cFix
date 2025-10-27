@@ -1,3 +1,5 @@
+
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -11,7 +13,7 @@ import json
 import random
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, ComplaintForm, ApplicationForm
 from .decorators import role_required
-from .models import Complaint, Application
+from .models import Complaint, Application, Notification
 
 def register_view(request):
     if request.method == 'POST':
@@ -71,7 +73,12 @@ def logout_view(request):
 @login_required
 @role_required(['student'])
 def student_dashboard(request):
-    return render(request, 'dashboard/student.html')
+    notifications = request.user.notifications.filter(is_read=False)[:5]  # Get latest 5 unread notifications
+    context = {
+        'notifications': notifications,
+        'unread_count': request.user.notifications.filter(is_read=False).count(),
+    }
+    return render(request, 'dashboard/student.html', context)
 
 @login_required
 @role_required(['staff'])
@@ -360,4 +367,157 @@ def complaint_details(request, complaint_id):
         return JsonResponse({
             'success': False,
             'message': 'An error occurred while retrieving complaint details.'
+        })
+
+
+@login_required
+def application_details(request, application_id):
+    """Return detailed information for a specific application"""
+    try:
+        # Remove 'A' prefix if present
+        if isinstance(application_id, str) and application_id.startswith('A'):
+            application_id = int(application_id[1:])
+
+        application = Application.objects.select_related('student').get(id=application_id)
+
+        # Check permissions: students can only view their own applications
+        if request.user.role == 'student' and application.student != request.user:
+            return JsonResponse({
+                'success': False,
+                'message': 'You do not have permission to view this application.'
+            })
+
+        application_data = {
+            'id': f'A{application.id:03d}',
+            'title': application.title,
+            'description': application.description,
+            'application_type': application.application_type.replace('-', ' ').title(),
+            'department': application.department.replace('_', ' ').title(),
+            'status': application.status,
+            'student_name': f"{application.student.first_name} {application.student.last_name}",
+            'student_id': application.student.college_id,
+            'date': application.created_at.strftime('%Y-%m-%d'),
+            'updated_at': application.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+        }
+
+        return JsonResponse({
+            'success': True,
+            'application': application_data
+        })
+
+    except Application.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Application not found.'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': 'An error occurred while retrieving application details.'
+        })
+
+
+@login_required
+@role_required(['student'])
+@require_POST
+def delete_complaint(request):
+    """Delete a pending complaint (students only)"""
+    try:
+        data = json.loads(request.body)
+        complaint_id = data.get('complaint_id')
+
+        if not complaint_id:
+            return JsonResponse({
+                'success': False,
+                'message': 'Complaint ID is required.'
+            })
+
+        # Remove 'C' prefix if present
+        if isinstance(complaint_id, str) and complaint_id.startswith('C'):
+            complaint_id = int(complaint_id[1:])
+
+        complaint = Complaint.objects.get(id=complaint_id)
+
+        # Check if complaint belongs to the user and is pending
+        if complaint.student != request.user:
+            return JsonResponse({
+                'success': False,
+                'message': 'You can only delete your own complaints.'
+            })
+
+        if complaint.status != 'pending':
+            return JsonResponse({
+                'success': False,
+                'message': 'You can only delete pending complaints.'
+            })
+
+        complaint.delete()
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Complaint deleted successfully.'
+        })
+
+    except Complaint.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Complaint not found.'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': 'An error occurred while deleting the complaint.'
+        })
+
+
+@login_required
+@role_required(['student'])
+@require_POST
+def delete_application(request):
+    """Delete a pending application (students only)"""
+    try:
+        data = json.loads(request.body)
+        application_id = data.get('application_id')
+
+        if not application_id:
+            return JsonResponse({
+                'success': False,
+                'message': 'Application ID is required.'
+            })
+
+        # Remove 'A' prefix if present
+        if isinstance(application_id, str) and application_id.startswith('A'):
+            application_id = int(application_id[1:])
+
+        application = Application.objects.get(id=application_id)
+
+        # Check if application belongs to the user and is pending
+        if application.student != request.user:
+            return JsonResponse({
+                'success': False,
+                'message': 'You can only delete your own applications.'
+            })
+
+        if application.status != 'pending':
+            return JsonResponse({
+                'success': False,
+                'message': 'You can only delete pending applications.'
+            })
+
+        application.delete()
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Application deleted successfully.'
+        })
+
+    except Application.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Application not found.'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': 'An error occurred while deleting the application.'
         })

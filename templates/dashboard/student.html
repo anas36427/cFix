@@ -471,11 +471,7 @@
                                 <label class="block text-gray-700 font-medium mb-2">Detailed Description</label>
                                 <textarea rows="5" name="description" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Provide detailed information about your application" required></textarea>
 
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-2">Supporting Documents</label>
-                                <input type="file" multiple class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                                <p class="text-sm text-gray-500 mt-1">Upload any supporting documents (PDF, DOC, JPG)</p>
-                            </div>
+
 
                             <div class="flex justify-end space-x-4">
                                 <button type="button" class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
@@ -547,8 +543,8 @@
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <button class="text-green-600 hover:text-green-900 mr-3">View</button>
-                                                <button class="text-red-600 hover:text-red-900">Cancel</button>
+                                                <button onclick="viewComplaint('${complaint.id}')" class="text-green-600 hover:text-green-900 mr-3">View</button>
+                                                <button onclick="deleteComplaint('${complaint.id}')" class="text-red-600 hover:text-red-900">Cancel</button>
                                             </td>
                                         </tr>
                                     `).join('')}
@@ -618,8 +614,8 @@
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <button class="text-green-600 hover:text-green-900 mr-3">View</button>
-                                                <button class="text-red-600 hover:text-red-900">Cancel</button>
+                                                <button onclick="viewApplication('${application.id}')" class="text-green-600 hover:text-green-900 mr-3">View</button>
+                                                <button onclick="deleteApplication('${application.id}')" class="text-red-600 hover:text-red-900">Cancel</button>
                                             </td>
                                         </tr>
                                     `).join('')}
@@ -793,6 +789,199 @@
                 }
             }
         });
+
+        // View complaint details
+        async function viewComplaint(complaintId) {
+            try {
+                const response = await fetch(`/accounts/complaints/${complaintId}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showItemModal(result.complaint, 'complaint');
+                } else {
+                    alert('Failed to load complaint details: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error loading complaint details:', error);
+                alert('An error occurred while loading complaint details.');
+            }
+        }
+
+        // View application details
+        async function viewApplication(applicationId) {
+            try {
+                const response = await fetch(`/accounts/applications/${applicationId}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showItemModal(result.application, 'application');
+                } else {
+                    alert('Failed to load application details: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error loading application details:', error);
+                alert('An error occurred while loading application details.');
+            }
+        }
+
+        // Show modal with item details
+        function showItemModal(item, type) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50';
+            modal.innerHTML = `
+                <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+                    <div class="mt-3">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">${type === 'complaint' ? 'Complaint' : 'Application'} Details</h3>
+                            <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 mb-2">${type === 'complaint' ? 'Complaint' : 'Application'} Information</h4>
+                                    <p><strong>ID:</strong> ${item.id}</p>
+                                    <p><strong>Title:</strong> ${item.title}</p>
+                                    <p><strong>Description:</strong> ${item.description}</p>
+                                    ${type === 'complaint' ? `
+                                        <p><strong>Category:</strong> ${item.category}</p>
+                                        <p><strong>Department:</strong> ${item.department}</p>
+                                        <p><strong>Hall:</strong> ${item.hall}</p>
+                                        <p><strong>Priority:</strong> ${item.priority}</p>
+                                    ` : `
+                                        <p><strong>Type:</strong> ${item.application_type}</p>
+                                        <p><strong>Department:</strong> ${item.department}</p>
+                                    `}
+                                    <p><strong>Status:</strong> <span class="status-${item.status} px-2 py-1 rounded text-xs font-semibold">${item.status.toUpperCase()}</span></p>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 mb-2">Student Information</h4>
+                                    <p><strong>Name:</strong> ${item.student_name}</p>
+                                    <p><strong>College ID:</strong> ${item.student_id}</p>
+                                    <p><strong>Date Submitted:</strong> ${item.date}</p>
+                                    <p><strong>Last Updated:</strong> ${item.updated_at}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Delete complaint with custom modal
+        async function deleteComplaint(complaintId) {
+            showDeleteConfirmation('complaint', complaintId);
+        }
+
+        async function deleteApplication(applicationId) {
+            showDeleteConfirmation('application', applicationId);
+        }
+
+        // Show custom delete confirmation modal
+        function showDeleteConfirmation(type, itemId) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50';
+            modal.innerHTML = `
+                <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/3 shadow-lg rounded-md bg-white">
+                    <div class="mt-3">
+                        <div class="flex items-center mb-4">
+                            <div class="flex-shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">Delete ${type === 'complaint' ? 'Complaint' : 'Application'}</h3>
+                                <p class="text-sm text-gray-500 mt-1">This action cannot be undone. This will permanently delete your ${type}.</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-end space-x-4 mt-6">
+                            <button onclick="this.closest('.fixed').remove()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                                Cancel
+                            </button>
+                            <button onclick="confirmDelete('${type}', '${itemId}'); this.closest('.fixed').remove()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                                Delete ${type === 'complaint' ? 'Complaint' : 'Application'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Confirm delete action
+        async function confirmDelete(type, itemId) {
+            try {
+                const endpoint = type === 'complaint' ? '/accounts/complaints/delete/' : '/accounts/applications/delete/';
+                const dataKey = type === 'complaint' ? 'complaint_id' : 'application_id';
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({ [dataKey]: itemId })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showSuccessMessage(result.message);
+                    await loadData(); // Reload data
+                    switchView(type === 'complaint' ? 'my-complaints' : 'my-applications'); // Refresh the view
+                } else {
+                    showErrorMessage('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error(`Error deleting ${type}:`, error);
+                showErrorMessage(`An error occurred while deleting your ${type}.`);
+            }
+        }
+
+        // Show success message
+        function showSuccessMessage(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 fade-in';
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    ${message}
+                </div>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Show error message
+        function showErrorMessage(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 fade-in';
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    ${message}
+                </div>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
 
         // Initialize dashboard on page load
         document.addEventListener('DOMContentLoaded', initDashboard);
