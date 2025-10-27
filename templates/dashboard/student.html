@@ -538,7 +538,8 @@
                 const matchesSearch = !complaintSearchQuery ||
                     complaint.title.toLowerCase().includes(complaintSearchQuery.toLowerCase()) ||
                     complaint.description.toLowerCase().includes(complaintSearchQuery.toLowerCase()) ||
-                    complaint.category.toLowerCase().includes(complaintSearchQuery.toLowerCase());
+                    complaint.category.toLowerCase().includes(complaintSearchQuery.toLowerCase()) ||
+                    complaint.hall.toLowerCase().includes(complaintSearchQuery.toLowerCase());
                 return matchesCategory && matchesStatus && matchesSearch;
             });
 
@@ -570,8 +571,8 @@
                                     </select>
                                 </div>
                                 <div class="flex space-x-2">
-                                    <input type="search" id="complaintSearchInput" placeholder="Search complaints..." class="p-2 border border-gray-300 rounded-lg">
-                                    <button id="complaintSearchButton" class="px-4 py-2 amu-green text-white rounded-lg hover:bg-green-800 transition-colors">Search</button>
+                                    <input type="search" id="complaintSearchInput" placeholder="Search complaints..." class="p-2 border border-gray-300 rounded-lg" oninput="updateComplaintSearch()">
+                                    <button id="complaintSearchButton" class="px-4 py-2 amu-green text-white rounded-lg hover:bg-green-800 transition-colors" onclick="updateComplaintSearch()">Search</button>
                                 </div>
                             </div>
                             <div class="mt-3 text-sm text-gray-600">
@@ -627,7 +628,8 @@
                 const matchesSearch = !applicationSearchQuery ||
                     application.title.toLowerCase().includes(applicationSearchQuery.toLowerCase()) ||
                     application.description.toLowerCase().includes(applicationSearchQuery.toLowerCase()) ||
-                    application.category.toLowerCase().includes(applicationSearchQuery.toLowerCase());
+                    application.category.toLowerCase().includes(applicationSearchQuery.toLowerCase()) ||
+                    application.department.toLowerCase().includes(applicationSearchQuery.toLowerCase());
                 return matchesCategory && matchesStatus && matchesSearch;
             });
 
@@ -644,9 +646,9 @@
                                 <div class="flex space-x-4">
                                     <select id="applicationCategoryFilter" onchange="updateApplicationFilters()" class="p-2 border border-gray-300 rounded-lg">
                                         <option value="">All Categories</option>
-                                        <option value="room-change-request">Room Change Request</option>
+                                        <option value="room-change">Room Change</option>
                                         <option value="library-subscription">Library Subscription</option>
-                                        <option value="exam-re-evaluation">Exam Re-evaluation</option>
+                                        <option value="exam-revaluation">Exam Re-evaluation</option>
                                         <option value="fee-concession">Fee Concession</option>
                                         <option value="other">Other</option>
                                     </select>
@@ -658,8 +660,8 @@
                                     </select>
                                 </div>
                                 <div class="flex space-x-2">
-                                    <input type="search" id="applicationSearchInput" placeholder="Search applications..." class="p-2 border border-gray-300 rounded-lg">
-                                    <button id="applicationSearchButton" class="px-4 py-2 amu-green text-white rounded-lg hover:bg-green-800 transition-colors">Search</button>
+                                    <input type="search" id="applicationSearchInput" placeholder="Search applications..." class="p-2 border border-gray-300 rounded-lg" oninput="updateApplicationSearch()">
+                                    <button id="applicationSearchButton" class="px-4 py-2 amu-green text-white rounded-lg hover:bg-green-800 transition-colors" onclick="updateApplicationSearch()">Search</button>
                                 </div>
                             </div>
                             <div class="mt-3 text-sm text-gray-600">
@@ -1139,7 +1141,8 @@
         }
 
         // Update complaint search
-        function updateComplaintSearch() {
+        function updateComplaintSearch(event) {
+            if (event) event.preventDefault();
             complaintSearchQuery = document.getElementById('complaintSearchInput').value.trim();
             renderContent(); // Re-render the current view
         }
@@ -1166,7 +1169,8 @@
         }
 
         // Update application search
-        function updateApplicationSearch() {
+        function updateApplicationSearch(event) {
+            if (event) event.preventDefault();
             applicationSearchQuery = document.getElementById('applicationSearchInput').value.trim();
             renderContent(); // Re-render the current view
         }
@@ -1182,13 +1186,13 @@
             const applicationSearchButton = document.getElementById('applicationSearchButton');
 
             if (complaintSearchInput && complaintSearchButton) {
-                complaintSearchInput.addEventListener('input', updateComplaintSearch);
-                complaintSearchButton.addEventListener('click', updateComplaintSearch);
+                complaintSearchInput.addEventListener('input', (e) => updateComplaintSearch(e));
+                complaintSearchButton.addEventListener('click', (e) => updateComplaintSearch(e));
             }
 
             if (applicationSearchInput && applicationSearchButton) {
-                applicationSearchInput.addEventListener('input', updateApplicationSearch);
-                applicationSearchButton.addEventListener('click', updateApplicationSearch);
+                applicationSearchInput.addEventListener('input', (e) => updateApplicationSearch(e));
+                applicationSearchButton.addEventListener('click', (e) => updateApplicationSearch(e));
             }
         });
     </script>
