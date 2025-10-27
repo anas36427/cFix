@@ -213,9 +213,23 @@
             if (viewId === 'my-complaints') {
                 complaintCategoryFilter = '';
                 complaintStatusFilter = '';
+                // Update display after reset
+                setTimeout(() => {
+                    const categoryDisplay = document.getElementById('complaintCategoryDisplay');
+                    const statusDisplay = document.getElementById('complaintStatusDisplay');
+                    if (categoryDisplay) categoryDisplay.textContent = 'All Categories';
+                    if (statusDisplay) statusDisplay.textContent = 'All Status';
+                }, 100);
             } else if (viewId === 'my-applications') {
                 applicationCategoryFilter = '';
                 applicationStatusFilter = '';
+                // Update display after reset
+                setTimeout(() => {
+                    const categoryDisplay = document.getElementById('applicationCategoryDisplay');
+                    const statusDisplay = document.getElementById('applicationStatusDisplay');
+                    if (categoryDisplay) categoryDisplay.textContent = 'All Categories';
+                    if (statusDisplay) statusDisplay.textContent = 'All Status';
+                }, 100);
             }
 
             renderNavigation();
@@ -502,7 +516,7 @@
         // Render complaints list
         function renderComplaintsList() {
             const filteredComplaints = complaintsData.filter(complaint => {
-                const matchesCategory = !complaintCategoryFilter || complaint.category.toLowerCase() === complaintCategoryFilter.toLowerCase();
+                const matchesCategory = !complaintCategoryFilter || complaint.category === complaintCategoryFilter;
                 const matchesStatus = !complaintStatusFilter || complaint.status === complaintStatusFilter;
                 return matchesCategory && matchesStatus;
             });
@@ -520,11 +534,11 @@
                                 <div class="flex space-x-4">
                                     <select id="complaintCategoryFilter" onchange="updateComplaintFilters()" class="p-2 border border-gray-300 rounded-lg">
                                         <option value="">All Categories</option>
-                                        <option value="infrastructure">Infrastructure</option>
-                                        <option value="food">Food Services</option>
-                                        <option value="maintenance">Maintenance</option>
-                                        <option value="security">Security</option>
-                                        <option value="other">Other</option>
+                                        <option value="Infrastructure">Infrastructure</option>
+                                        <option value="Food Services">Food Services</option>
+                                        <option value="Maintenance">Maintenance</option>
+                                        <option value="Security">Security</option>
+                                        <option value="Other">Other</option>
                                     </select>
                                     <select id="complaintStatusFilter" onchange="updateComplaintFilters()" class="p-2 border border-gray-300 rounded-lg">
                                         <option value="">All Status</option>
@@ -538,6 +552,9 @@
                                     <input type="search" placeholder="Search complaints..." class="p-2 border border-gray-300 rounded-lg">
                                     <button class="px-4 py-2 amu-green text-white rounded-lg hover:bg-green-800 transition-colors">Search</button>
                                 </div>
+                            </div>
+                            <div class="mt-3 text-sm text-gray-600">
+                                <span>Active filters: Category - <span id="complaintCategoryDisplay" class="font-medium">All Categories</span>, Status - <span id="complaintStatusDisplay" class="font-medium">All Status</span></span>
                             </div>
                         </div>
 
@@ -584,7 +601,7 @@
         // Render applications list
         function renderApplicationsList() {
             const filteredApplications = applicationsData.filter(application => {
-                const matchesCategory = !applicationCategoryFilter || application.category.toLowerCase() === applicationCategoryFilter.toLowerCase();
+                const matchesCategory = !applicationCategoryFilter || application.category === applicationCategoryFilter;
                 const matchesStatus = !applicationStatusFilter || application.status === applicationStatusFilter;
                 return matchesCategory && matchesStatus;
             });
@@ -602,11 +619,11 @@
                                 <div class="flex space-x-4">
                                     <select id="applicationCategoryFilter" onchange="updateApplicationFilters()" class="p-2 border border-gray-300 rounded-lg">
                                         <option value="">All Categories</option>
-                                        <option value="room-change">Room Change Request</option>
-                                        <option value="library-subscription">Library Subscription</option>
-                                        <option value="exam-revaluation">Exam Re-evaluation</option>
-                                        <option value="fee-concession">Fee Concession</option>
-                                        <option value="other">Other</option>
+                                        <option value="Room Change">Room Change Request</option>
+                                        <option value="Library Subscription">Library Subscription</option>
+                                        <option value="Exam Revaluation">Exam Re-evaluation</option>
+                                        <option value="Fee Concession">Fee Concession</option>
+                                        <option value="Other">Other</option>
                                     </select>
                                     <select id="applicationStatusFilter" onchange="updateApplicationFilters()" class="p-2 border border-gray-300 rounded-lg">
                                         <option value="">All Status</option>
@@ -619,6 +636,9 @@
                                     <input type="search" placeholder="Search applications..." class="p-2 border border-gray-300 rounded-lg">
                                     <button class="px-4 py-2 amu-green text-white rounded-lg hover:bg-green-800 transition-colors">Search</button>
                                 </div>
+                            </div>
+                            <div class="mt-3 text-sm text-gray-600">
+                                <span>Active filters: Category - <span id="applicationCategoryDisplay" class="font-medium">All Categories</span>, Status - <span id="applicationStatusDisplay" class="font-medium">All Status</span></span>
                             </div>
                         </div>
 
@@ -1076,6 +1096,20 @@
         function updateComplaintFilters() {
             complaintCategoryFilter = document.getElementById('complaintCategoryFilter').value;
             complaintStatusFilter = document.getElementById('complaintStatusFilter').value;
+
+            // Update display text
+            const categoryDisplay = document.getElementById('complaintCategoryDisplay');
+            const statusDisplay = document.getElementById('complaintStatusDisplay');
+
+            if (categoryDisplay && statusDisplay) {
+                categoryDisplay.textContent = complaintCategoryFilter ?
+                    document.getElementById('complaintCategoryFilter').options[document.getElementById('complaintCategoryFilter').selectedIndex].text :
+                    'All Categories';
+                statusDisplay.textContent = complaintStatusFilter ?
+                    document.getElementById('complaintStatusFilter').options[document.getElementById('complaintStatusFilter').selectedIndex].text :
+                    'All Status';
+            }
+
             renderContent(); // Re-render the current view
         }
 
@@ -1083,6 +1117,20 @@
         function updateApplicationFilters() {
             applicationCategoryFilter = document.getElementById('applicationCategoryFilter').value;
             applicationStatusFilter = document.getElementById('applicationStatusFilter').value;
+
+            // Update display text
+            const categoryDisplay = document.getElementById('applicationCategoryDisplay');
+            const statusDisplay = document.getElementById('applicationStatusDisplay');
+
+            if (categoryDisplay && statusDisplay) {
+                categoryDisplay.textContent = applicationCategoryFilter ?
+                    document.getElementById('applicationCategoryFilter').options[document.getElementById('applicationCategoryFilter').selectedIndex].text :
+                    'All Categories';
+                statusDisplay.textContent = applicationStatusFilter ?
+                    document.getElementById('applicationStatusFilter').options[document.getElementById('applicationStatusFilter').selectedIndex].text :
+                    'All Status';
+            }
+
             renderContent(); // Re-render the current view
         }
 
