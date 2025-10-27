@@ -127,6 +127,12 @@
         let currentRole = 'student';
         let currentView = 'overview';
 
+        // Filter variables
+        let complaintCategoryFilter = '';
+        let complaintStatusFilter = '';
+        let applicationCategoryFilter = '';
+        let applicationStatusFilter = '';
+
         // Initialize dashboard
         function initDashboard() {
             updateUserInfo();
@@ -485,6 +491,12 @@
 
         // Render complaints list
         function renderComplaintsList() {
+            const filteredComplaints = complaintsData.filter(complaint => {
+                const matchesCategory = !complaintCategoryFilter || complaint.category.toLowerCase() === complaintCategoryFilter.toLowerCase();
+                const matchesStatus = !complaintStatusFilter || complaint.status === complaintStatusFilter;
+                return matchesCategory && matchesStatus;
+            });
+
             return `
                 <div class="fade-in">
                     <div class="mb-8">
@@ -496,17 +508,20 @@
                         <div class="p-6 border-b border-gray-200">
                             <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
                                 <div class="flex space-x-4">
-                                    <select class="p-2 border border-gray-300 rounded-lg">
+                                    <select id="complaintCategoryFilter" onchange="updateComplaintFilters()" class="p-2 border border-gray-300 rounded-lg">
                                         <option value="">All Categories</option>
                                         <option value="infrastructure">Infrastructure</option>
                                         <option value="food">Food Services</option>
                                         <option value="maintenance">Maintenance</option>
+                                        <option value="security">Security</option>
+                                        <option value="other">Other</option>
                                     </select>
-                                    <select class="p-2 border border-gray-300 rounded-lg">
+                                    <select id="complaintStatusFilter" onchange="updateComplaintFilters()" class="p-2 border border-gray-300 rounded-lg">
                                         <option value="">All Status</option>
                                         <option value="pending">Pending</option>
                                         <option value="in-progress">In Progress</option>
                                         <option value="resolved">Resolved</option>
+                                        <option value="rejected">Rejected</option>
                                     </select>
                                 </div>
                                 <div class="flex space-x-2">
@@ -530,7 +545,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    ${complaintsData.map(complaint => `
+                                    ${filteredComplaints.map(complaint => `
                                         <tr class="hover:bg-gray-50">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${complaint.id}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${complaint.title}</td>
@@ -558,6 +573,12 @@
 
         // Render applications list
         function renderApplicationsList() {
+            const filteredApplications = applicationsData.filter(application => {
+                const matchesCategory = !applicationCategoryFilter || application.category.toLowerCase() === applicationCategoryFilter.toLowerCase();
+                const matchesStatus = !applicationStatusFilter || application.status === applicationStatusFilter;
+                return matchesCategory && matchesStatus;
+            });
+
             return `
                 <div class="fade-in">
                     <div class="mb-8">
@@ -569,13 +590,15 @@
                         <div class="p-6 border-b border-gray-200">
                             <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
                                 <div class="flex space-x-4">
-                                    <select class="p-2 border border-gray-300 rounded-lg">
+                                    <select id="applicationCategoryFilter" onchange="updateApplicationFilters()" class="p-2 border border-gray-300 rounded-lg">
                                         <option value="">All Categories</option>
-                                        <option value="accommodation">Accommodation</option>
-                                        <option value="academic">Academic</option>
-                                        <option value="financial">Financial</option>
+                                        <option value="room-change">Room Change Request</option>
+                                        <option value="library-subscription">Library Subscription</option>
+                                        <option value="exam-revaluation">Exam Re-evaluation</option>
+                                        <option value="fee-concession">Fee Concession</option>
+                                        <option value="other">Other</option>
                                     </select>
-                                    <select class="p-2 border border-gray-300 rounded-lg">
+                                    <select id="applicationStatusFilter" onchange="updateApplicationFilters()" class="p-2 border border-gray-300 rounded-lg">
                                         <option value="">All Status</option>
                                         <option value="pending">Pending</option>
                                         <option value="approved">Approved</option>
@@ -602,7 +625,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    ${applicationsData.map(application => `
+                                    ${filteredApplications.map(application => `
                                         <tr class="hover:bg-gray-50">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${application.id}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${application.title}</td>
@@ -1037,6 +1060,20 @@
                 </div>
             `;
             document.body.appendChild(modal);
+        }
+
+        // Update complaint filters
+        function updateComplaintFilters() {
+            complaintCategoryFilter = document.getElementById('complaintCategoryFilter').value;
+            complaintStatusFilter = document.getElementById('complaintStatusFilter').value;
+            renderContent(); // Re-render the current view
+        }
+
+        // Update application filters
+        function updateApplicationFilters() {
+            applicationCategoryFilter = document.getElementById('applicationCategoryFilter').value;
+            applicationStatusFilter = document.getElementById('applicationStatusFilter').value;
+            renderContent(); // Re-render the current view
         }
 
         // Initialize dashboard on page load
