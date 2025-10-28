@@ -131,6 +131,7 @@ class Application(models.Model):
 
     DEPARTMENTS = [
         ('dsw', 'Dean of Student Welfare'),
+        ('provost', 'Provost/Hall Management'),
         ('library', 'Library'),
         ('examination', 'Examination Controller'),
         ('accounts', 'Accounts'),

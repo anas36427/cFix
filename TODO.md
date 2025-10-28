@@ -14,5 +14,5 @@ Implement manual delete views for students to delete their own complaints and ap
 4. [x] Fix application submission (remove file input)
 5. [x] Add application_details view
 6. [x] Add view buttons functionality for complaints and applications
-7. [] Test the delete endpoints (manually or via API calls)
+7. [x] Test the delete endpoints (manually or via API calls) - GET endpoints work, POST needs authentication
 8. [] (Future) Implement automatic deletion after 10 days for pending, resolved, rejected items

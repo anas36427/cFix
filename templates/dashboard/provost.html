@@ -21,6 +21,7 @@
     .status-resolved { background: #d1fae5; color: #065f46; }
     .status-rejected { background: #fee2e2; color: #991b1b; }
     .status-in-progress { background: #dbeafe; color: #1e40af; }
+    .status-approved { background: #d1fae5; color: #065f46; }
     .fade-in {
         animation: fadeIn 0.5s ease-in;
     }
@@ -48,8 +49,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold">AMU C-FiX Portal</h1>
-                        <p class="text-green-200 text-sm">Provost Dashboard</p>
+                <h1 class="text-xl font-bold">AMU C-FiX Portal</h1>
+                <p class="text-green-200 text-sm">Provost Dashboard</p>
                     </div>
                 </div>
             </div>
@@ -73,19 +74,25 @@
     <!-- Sidebar -->
     <div id="sidebar" class="fixed left-0 top-16 h-full w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-40">
         <nav class="mt-8">
-            <a href="#complaints" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100">
+            <a href="#" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 bg-gray-200" onclick="showSection('complaints')">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
-                All Complaints
+                Provost Complaints
             </a>
-            <a href="#analytics" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100">
+            <a href="#" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 bg-gray-200" onclick="showSection('complaints')">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Provost Complaints
+            </a>
+            <a href="#" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100" onclick="showSection('analytics')">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                 </svg>
                 Analytics
             </a>
-            <a href="#reports" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100">
+            <a href="#" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100" onclick="showSection('reports')">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                 </svg>
@@ -100,11 +107,73 @@
     <!-- Main Content -->
     <div class="lg:ml-64 pt-16">
         <div class="p-8">
+            <!-- Analytics Section -->
+            <div id="analytics" class="fade-in" style="display: none;">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Analytics Dashboard</h2>
+                    <p class="text-gray-600">Overview of complaints and applications statistics</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Provost Complaints</p>
+                        <p class="text-2xl font-bold text-gray-900" id="totalComplaints">0</p>
+                    </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100 text-green-600">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Resolved Complaints</p>
+                        <p class="text-2xl font-bold text-gray-900" id="totalApplications">0</p>
+                    </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Pending Items</p>
+                                <p class="text-2xl font-bold text-gray-900" id="pendingItems">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-red-100 text-red-600">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Rejected Items</p>
+                                <p class="text-2xl font-bold text-gray-900" id="rejectedItems">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Complaints Management Section -->
             <div id="complaints" class="fade-in">
                 <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Complaints Management</h2>
-                    <p class="text-gray-600">Manage and update complaint statuses</p>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Provost Complaints Management</h2>
+                    <p class="text-gray-600">Manage and update complaint statuses for Provost department</p>
                 </div>
 
                 <!-- Filters -->
@@ -175,6 +244,90 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Applications Management Section -->
+            <div id="applications" class="fade-in" style="display: none;">
+                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm">Applications section is currently locked for Provost role. Provost handles complaints only.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Applications Management</h2>
+                    <p class="text-gray-600">Manage and update application statuses</p>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="mb-6 space-y-4">
+                    <!-- Search Bar -->
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                        <div class="flex space-x-4">
+                            <input type="text" id="applicationSearchInput" placeholder="Search applications by title, student name, or ID..." class="px-4 py-2 border border-gray-300 rounded-md flex-1 min-w-0">
+                            <button id="applicationSearchButton" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 whitespace-nowrap">
+                                Search
+                            </button>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button id="appRefreshBtn" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="flex flex-wrap gap-4">
+                        <select id="appStatusFilter" class="px-4 py-2 border border-gray-300 rounded-md">
+                            <option value="">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                        <select id="appCategoryFilter" class="px-4 py-2 border border-gray-300 rounded-md">
+                            
+                            <option value="">All Categories</option>
+                            <option value="infrastructure">Infrastructure</option>
+                            <option value="food">Food Services</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="security">Security</option>
+                            <option value="other">Other</option>
+                            </select>
+                            <select id="appDepartmentFilter" class="px-4 py-2 border border-gray-300 rounded-md">
+                            <option value="">All Departments</option>
+                            <option value="provost">Provost</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Applications Table -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="applicationsTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- Applications will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -198,8 +351,50 @@
     </div>
 </div>
 
+<!-- Application Details Modal -->
+<div id="applicationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900" id="appModalTitle">Application Details</h3>
+                <button id="closeAppModal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="appModalContent" class="text-sm text-gray-500">
+                <!-- Application details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Message Modal -->
+<div id="successModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full mx-4">
+        <div class="flex items-center mb-4">
+            <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-lg font-medium text-gray-900">Success!</h3>
+            </div>
+        </div>
+        <p id="successMessage" class="text-sm text-gray-600 mb-4">Status updated successfully.</p>
+        <div class="flex justify-end">
+            <button id="closeSuccessModal" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                OK
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
 let allComplaints = [];
+let allApplications = [];
 let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
 
 // Initialize dashboard
@@ -245,9 +440,33 @@ function setupEventListeners() {
     document.getElementById('hallFilter').addEventListener('change', filterComplaints);
     document.getElementById('refreshBtn').addEventListener('click', loadComplaints);
 
+    // Application filters and modal
+    document.getElementById('appStatusFilter').addEventListener('change', filterApplications);
+    document.getElementById('appCategoryFilter').addEventListener('change', filterApplications);
+    document.getElementById('appDepartmentFilter').addEventListener('change', filterApplications);
+    document.getElementById('appRefreshBtn').addEventListener('click', loadApplications);
+
+    // Application search
+    document.getElementById('applicationSearchButton').addEventListener('click', searchApplications);
+    document.getElementById('applicationSearchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchApplications();
+        }
+    });
+
     // Modal close
     document.getElementById('closeModal').addEventListener('click', function() {
         document.getElementById('complaintModal').classList.add('hidden');
+    });
+
+    // Application modal close
+    document.getElementById('closeAppModal').addEventListener('click', function() {
+        document.getElementById('applicationModal').classList.add('hidden');
+    });
+
+    // Success modal close
+    document.getElementById('closeSuccessModal').addEventListener('click', function() {
+        document.getElementById('successModal').classList.add('hidden');
     });
 }
 
@@ -286,7 +505,7 @@ function renderComplaints(complaints) {
     tbody.innerHTML = '';
 
     if (complaints.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-4 text-center text-gray-500">No complaints found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500">No complaints found</td></tr>';
         return;
     }
 
@@ -311,7 +530,7 @@ function renderComplaints(complaints) {
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${complaint.date}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <button onclick="viewComplaint('${complaint.id}')" class="text-indigo-600 hover:text-indigo-900 mr-3">View</button>
-                <select onchange="updateStatus('${complaint.id}', this.value)" class="text-sm border border-gray-300 rounded px-2 py-1">
+                <select onchange="updateComplaintStatus('${complaint.id}', this.value)" class="text-sm border border-gray-300 rounded px-2 py-1">
                     <option value="">Change Status</option>
                     <option value="pending" ${complaint.status === 'pending' ? 'selected' : ''}>Pending</option>
                     <option value="in-progress" ${complaint.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
@@ -405,7 +624,7 @@ function showComplaintModal(complaint) {
     modal.classList.remove('hidden');
 }
 
-async function updateStatus(complaintId, newStatus) {
+async function updateComplaintStatus(complaintId, newStatus) {
     if (!newStatus) return;
 
     try {
@@ -443,8 +662,294 @@ async function updateStatus(complaintId, newStatus) {
 }
 
 function showMessage(message, type) {
-    // Simple alert for now - you can replace with a proper notification system
-    alert(message);
+    const successModal = document.getElementById('successModal');
+    const successMessage = document.getElementById('successMessage');
+
+    if (type === 'success') {
+        successMessage.textContent = message;
+        successModal.classList.remove('hidden');
+    } else {
+        alert(message); // Fallback for error messages
+    }
+}
+
+function showSection(sectionName) {
+    // Hide all sections
+    const sections = ['complaints', 'analytics'];
+    sections.forEach(section => {
+        const element = document.getElementById(section);
+        if (element) {
+            element.style.display = 'none';
+        }
+    });
+
+    // Remove active class from all sidebar links
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    sidebarLinks.forEach(link => {
+        link.classList.remove('bg-gray-200');
+    });
+
+    // Show selected section
+    const selectedSection = document.getElementById(sectionName);
+    if (selectedSection) {
+        selectedSection.style.display = 'block';
+    }
+
+    // Add active class to clicked link
+    const clickedLink = document.querySelector(`[onclick="showSection('${sectionName}')"]`);
+    if (clickedLink) {
+        clickedLink.classList.add('bg-gray-200');
+    }
+
+    // Load data for analytics section if selected
+    if (sectionName === 'analytics') {
+        loadAnalytics();
+    }
+}
+
+async function loadAnalytics() {
+    try {
+        // Load complaints analytics (only Provost complaints)
+        const complaintsResponse = await fetch('/api/complaints/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            credentials: 'same-origin'
+        });
+
+        if (complaintsResponse.ok) {
+            const complaintsData = await complaintsResponse.json();
+
+            if (complaintsData.success) {
+                // Use all complaints for analytics
+                updateAnalytics(complaintsData.complaints, []);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading analytics:', error);
+    }
+}
+
+function updateAnalytics(complaints, applications) {
+    // Update total counts (only complaints for Provost)
+    document.getElementById('totalComplaints').textContent = complaints.length; // Total Provost complaints
+    document.getElementById('totalApplications').textContent = complaints.filter(c => c.status === 'resolved').length; // Resolved complaints
+
+    // Calculate pending items (only complaints)
+    const pendingComplaints = complaints.filter(c => c.status === 'pending').length;
+    document.getElementById('pendingItems').textContent = pendingComplaints;
+
+    // Calculate rejected items (only complaints)
+    const rejectedComplaints = complaints.filter(c => c.status === 'rejected').length;
+    document.getElementById('rejectedItems').textContent = rejectedComplaints;
+}
+
+async function loadApplications() {
+    try {
+        const response = await fetch('/api/applications/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            credentials: 'same-origin'
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+                allApplications = data.applications;
+                renderApplications(allApplications);
+            } else {
+                console.error('Failed to load applications:', data.message);
+                showMessage('Failed to load applications: ' + data.message, 'error');
+            }
+        } else {
+            console.error('HTTP error:', response.status);
+            showMessage('Failed to load applications. Please try again.', 'error');
+        }
+    } catch (error) {
+        console.error('Error loading applications:', error);
+        showMessage('An error occurred while loading applications.', 'error');
+    }
+}
+
+function renderApplications(applications) {
+    const tbody = document.getElementById('applicationsTableBody');
+    tbody.innerHTML = '';
+
+    if (applications.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500">No applications found</td></tr>';
+        return;
+    }
+
+    applications.forEach(application => {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-gray-50';
+
+        const statusClass = `status-${application.status}`;
+
+        row.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${application.id}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${application.title}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${application.student_name} (${application.student_id})</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${application.category}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${application.department}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                    ${application.status.toUpperCase()}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${application.date}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button onclick="viewApplication('${application.id}')" class="text-indigo-600 hover:text-indigo-900 mr-3">View</button>
+                <select onchange="updateApplicationStatus('${application.id}', this.value)" class="text-sm border border-gray-300 rounded px-2 py-1">
+                    <option value="">Change Status</option>
+                    <option value="pending" ${application.status === 'pending' ? 'selected' : ''}>Pending</option>
+                    <option value="approved" ${application.status === 'approved' ? 'selected' : ''}>Approved</option>
+                    <option value="rejected" ${application.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                </select>
+            </td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+function filterApplications() {
+    const statusFilter = document.getElementById('appStatusFilter').value;
+    const categoryFilter = document.getElementById('appCategoryFilter').value;
+    const departmentFilter = document.getElementById('appDepartmentFilter').value;
+
+    let filtered = allApplications;
+
+    if (statusFilter) {
+        filtered = filtered.filter(a => a.status === statusFilter);
+    }
+
+    if (categoryFilter) {
+        filtered = filtered.filter(a => a.category.toLowerCase().replace(' ', '-') === categoryFilter);
+    }
+
+    if (departmentFilter) {
+        filtered = filtered.filter(a => a.department.toLowerCase().replace(' ', '-') === departmentFilter);
+    }
+
+    renderApplications(filtered);
+}
+
+function searchApplications() {
+    const searchTerm = document.getElementById('applicationSearchInput').value.toLowerCase().trim();
+
+    if (!searchTerm) {
+        renderApplications(allApplications);
+        return;
+    }
+
+    const filtered = allApplications.filter(application =>
+        application.title.toLowerCase().includes(searchTerm) ||
+        application.student_name.toLowerCase().includes(searchTerm) ||
+        application.student_id.toLowerCase().includes(searchTerm) ||
+        application.id.toLowerCase().includes(searchTerm)
+    );
+
+    renderApplications(filtered);
+}
+
+async function viewApplication(applicationId) {
+    try {
+        const response = await fetch(`/api/applications/${applicationId}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            credentials: 'same-origin'
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+                showApplicationModal(data.application);
+            } else {
+                showMessage('Failed to load application details: ' + data.message, 'error');
+            }
+        } else {
+            showMessage('Failed to load application details.', 'error');
+        }
+    } catch (error) {
+        console.error('Error loading application details:', error);
+        showMessage('An error occurred while loading application details.', 'error');
+    }
+}
+
+function showApplicationModal(application) {
+    const modal = document.getElementById('applicationModal');
+    const title = document.getElementById('appModalTitle');
+    const content = document.getElementById('appModalContent');
+
+    title.textContent = `Application ${application.id} - ${application.title}`;
+
+    content.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-2">Application Information</h4>
+                <p><strong>Title:</strong> ${application.title}</p>
+                <p><strong>Description:</strong> ${application.description}</p>
+                <p><strong>Category:</strong> ${application.application_type}</p>
+                <p><strong>Department:</strong> ${application.department}</p>
+                <p><strong>Status:</strong> <span class="status-${application.status} px-2 py-1 rounded text-xs font-semibold">${application.status.toUpperCase()}</span></p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-2">Student Information</h4>
+                <p><strong>Name:</strong> ${application.student_name}</p>
+                <p><strong>College ID:</strong> ${application.student_id}</p>
+                <p><strong>Date Submitted:</strong> ${application.date}</p>
+                <p><strong>Last Updated:</strong> ${application.updated_at}</p>
+            </div>
+        </div>
+    `;
+
+    modal.classList.remove('hidden');
+}
+
+async function updateApplicationStatus(applicationId, newStatus) {
+    if (!newStatus) return;
+
+    try {
+        const response = await fetch('/api/applications/update-status/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                application_id: applicationId,
+                status: newStatus
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showMessage('Application status updated successfully!', 'success');
+            // Update the application in our local array
+            const application = allApplications.find(a => a.id === applicationId);
+            if (application) {
+                application.status = newStatus;
+                application.updated_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
+                filterApplications(); // Re-render with current filters
+            }
+        } else {
+            showMessage('Failed to update status: ' + data.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error updating status:', error);
+        showMessage('An error occurred while updating the status.', 'error');
+    }
 }
 </script>
 {% endblock %}

@@ -25,9 +25,13 @@ urlpatterns = [
     path('applications/submit/', views.submit_application, name='submit_application'),
     path('applications/my/', views.my_applications, name='my_applications'),
     path('applications/delete/', views.delete_application, name='delete_application'),
+    # path('applications/all/', views.all_applications, name='all_applications'),
+    path('applications/update-status/', views.update_application_status, name='update_application_status'),
     path('applications/<str:application_id>/', views.application_details, name='application_details'),
 
     # API endpoints
     path('complaints/', views.api_all_complaints, name='api_complaints'),
     path('complaints/<str:complaint_id>/', views.complaint_details, name='api_complaint_details'),
+    path('applications/', views.api_all_applications, name='api_applications'),
+    path('applications/<str:application_id>/', views.application_details, name='api_application_details'),
 ]

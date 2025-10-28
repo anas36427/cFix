@@ -241,7 +241,7 @@ def all_complaints(request):
         # Fallback for any other admin roles
         complaints = Complaint.objects.all().select_related('student')
 
-    complaints_data = complaints.values(
+    complaints_values = complaints.values(
         'id', 'title', 'description', 'category', 'department', 'hall', 'priority',
         'status', 'created_at', 'updated_at', 'student__first_name',
         'student__last_name', 'student__college_id'
@@ -249,7 +249,7 @@ def all_complaints(request):
 
     # Format data for frontend
     complaints_data = []
-    for complaint in complaints_data:
+    for complaint in complaints_values:
         complaints_data.append({
             'id': f'C{complaint["id"]:03d}',
             'title': complaint['title'],
@@ -276,6 +276,53 @@ def all_complaints(request):
 def api_all_complaints(request):
     """API endpoint for all complaints (admin/staff roles)"""
     return all_complaints(request)
+
+
+@login_required
+@role_required(['staff', 'provost', 'dsw', 'exam_controller'])
+def api_all_applications(request):
+    """API endpoint for all applications (admin/staff roles)"""
+    user_role = request.user.role
+
+    # Filter applications based on user role
+    if user_role == 'staff':
+        applications = Application.objects.filter(department='staff').select_related('student')
+    elif user_role == 'provost':
+        applications = Application.objects.filter(department='provost').select_related('student')
+    elif user_role == 'dsw':
+        applications = Application.objects.filter(department='dsw').select_related('student')
+    elif user_role == 'exam_controller':
+        applications = Application.objects.filter(department='exam_controller').select_related('student')
+    else:
+        # Fallback for any other admin roles
+        applications = Application.objects.all().select_related('student')
+
+    applications_values = applications.values(
+        'id', 'title', 'description', 'application_type', 'department',
+        'status', 'created_at', 'updated_at', 'student__first_name',
+        'student__last_name', 'student__college_id'
+    )
+
+    # Format data for frontend
+    applications_data = []
+    for application in applications_values:
+        applications_data.append({
+            'id': f'A{application["id"]:03d}',
+            'title': application['title'],
+            'description': application['description'],
+            'category': application['application_type'].replace('-', ' ').title(),
+            'department': application['department'].replace('_', ' ').title(),
+            'status': application['status'],
+            'student_name': f"{application['student__first_name']} {application['student__last_name']}",
+            'student_id': application['student__college_id'],
+            'date': application['created_at'].strftime('%Y-%m-%d'),
+            'updated_at': application['updated_at'].strftime('%Y-%m-%d %H:%M:%S')
+        })
+
+    return JsonResponse({
+        'success': True,
+        'applications': applications_data
+    })
 
 
 @login_required
@@ -318,6 +365,49 @@ def update_complaint_status(request):
         return JsonResponse({
             'success': False,
             'message': 'An error occurred while updating the complaint status.'
+        })
+
+
+@login_required
+@role_required(['staff', 'provost', 'dsw', 'exam_controller'])
+@require_POST
+def update_application_status(request):
+    """Update application status (admin/staff roles)"""
+    try:
+        data = json.loads(request.body)
+        application_id = data.get('application_id')
+        new_status = data.get('status')
+
+        if not application_id or not new_status:
+            return JsonResponse({
+                'success': False,
+                'message': 'Application ID and status are required.'
+            })
+
+        # Remove 'A' prefix if present
+        if isinstance(application_id, str) and application_id.startswith('A'):
+            application_id = int(application_id[1:])
+
+        application = Application.objects.get(id=application_id)
+        application.status = new_status
+        application.save()
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Application status updated successfully.',
+            'application_id': f'A{application.id:03d}',
+            'new_status': new_status
+        })
+
+    except Application.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Application not found.'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': 'An error occurred while updating the application status.'
         })
 
 

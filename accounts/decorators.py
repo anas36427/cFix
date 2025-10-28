@@ -18,7 +18,7 @@ def role_required(allowed_roles=None):
                     }, status=401)
                 # For regular views, render error page
                 from django.shortcuts import render
-                return render(request, 'errors/403.html', status=403)
+                return render(request, 'error/403.html', status=403)
 
             # Allow superuser always
             if user.is_superuser:
@@ -35,6 +35,6 @@ def role_required(allowed_roles=None):
                     'message': 'You do not have permission to access this resource.'
                 }, status=403)
             from django.shortcuts import render
-            return render(request, 'errors/403.html', status=403)
+            return render(request, 'error/403.html', status=403)
         return _wrapped_view
     return decorator
