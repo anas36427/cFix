@@ -75,8 +75,8 @@ def verified_applications_only(view_func):
                 user_role = request.user.role
 
                 # Filter applications based on verification status for specific roles
-                if user_role in ['dsw', 'exam_controller']:
-                    # Only show verified applications for DSW and exam controller
+                if user_role in ['staff', 'exam_controller']:
+                    # Only show verified applications for staff and exam controller
                     filtered_applications = [
                         app for app in data['applications']
                         if app.get('verified', False)
