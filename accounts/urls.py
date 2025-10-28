@@ -27,6 +27,7 @@ urlpatterns = [
     path('applications/delete/', views.delete_application, name='delete_application'),
     # path('applications/all/', views.all_applications, name='all_applications'),
     path('applications/update-status/', views.update_application_status, name='update_application_status'),
+    path('applications/verify/', views.verify_application, name='verify_application'),
     path('applications/<str:application_id>/', views.application_details, name='application_details'),
 
     # API endpoints

@@ -12,7 +12,7 @@ from django.views.decorators.http import require_POST
 import json
 import random
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, ComplaintForm, ApplicationForm
-from .decorators import role_required
+from .decorators import role_required, verified_applications_only
 from .models import Complaint, Application, Notification
 
 def register_view(request):
@@ -232,7 +232,7 @@ def all_complaints(request):
     if user_role == 'staff':
         complaints = Complaint.objects.filter(department='staff').select_related('student')
     elif user_role == 'provost':
-        complaints = Complaint.objects.filter(department='provost').select_related('student')
+        complaints = Complaint.objects.all().select_related('student')
     elif user_role == 'dsw':
         complaints = Complaint.objects.filter(department='dsw').select_related('student')
     elif user_role == 'exam_controller':
@@ -273,6 +273,7 @@ def all_complaints(request):
 
 @login_required
 @role_required(['staff', 'provost', 'dsw', 'exam_controller'])
+@csrf_exempt
 def api_all_complaints(request):
     """API endpoint for all complaints (admin/staff roles)"""
     return all_complaints(request)
@@ -280,6 +281,8 @@ def api_all_complaints(request):
 
 @login_required
 @role_required(['staff', 'provost', 'dsw', 'exam_controller'])
+@csrf_exempt
+@verified_applications_only
 def api_all_applications(request):
     """API endpoint for all applications (admin/staff roles)"""
     user_role = request.user.role
@@ -288,10 +291,12 @@ def api_all_applications(request):
     if user_role == 'staff':
         applications = Application.objects.filter(department='staff').select_related('student')
     elif user_role == 'provost':
-        applications = Application.objects.filter(department='provost').select_related('student')
+        applications = Application.objects.filter(verified=False).select_related('student')
     elif user_role == 'dsw':
+        # DSW can see all applications for their department (filtering happens in decorator)
         applications = Application.objects.filter(department='dsw').select_related('student')
     elif user_role == 'exam_controller':
+        # Exam controller can see all applications for their department (filtering happens in decorator)
         applications = Application.objects.filter(department='exam_controller').select_related('student')
     else:
         # Fallback for any other admin roles
@@ -300,7 +305,7 @@ def api_all_applications(request):
     applications_values = applications.values(
         'id', 'title', 'description', 'application_type', 'department',
         'status', 'created_at', 'updated_at', 'student__first_name',
-        'student__last_name', 'student__college_id'
+        'student__last_name', 'student__college_id', 'verified'
     )
 
     # Format data for frontend
@@ -316,7 +321,8 @@ def api_all_applications(request):
             'student_name': f"{application['student__first_name']} {application['student__last_name']}",
             'student_id': application['student__college_id'],
             'date': application['created_at'].strftime('%Y-%m-%d'),
-            'updated_at': application['updated_at'].strftime('%Y-%m-%d %H:%M:%S')
+            'updated_at': application['updated_at'].strftime('%Y-%m-%d %H:%M:%S'),
+            'verified': application['verified']
         })
 
     return JsonResponse({
@@ -408,6 +414,47 @@ def update_application_status(request):
         return JsonResponse({
             'success': False,
             'message': 'An error occurred while updating the application status.'
+        })
+
+
+@login_required
+@role_required(['provost'])
+@require_POST
+def verify_application(request):
+    """Verify application (provost only)"""
+    try:
+        data = json.loads(request.body)
+        application_id = data.get('application_id')
+
+        if not application_id:
+            return JsonResponse({
+                'success': False,
+                'message': 'Application ID is required.'
+            })
+
+        # Remove 'A' prefix if present
+        if isinstance(application_id, str) and application_id.startswith('A'):
+            application_id = int(application_id[1:])
+
+        application = Application.objects.get(id=application_id)
+        application.verified = True
+        application.save()
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Application verified successfully.',
+            'application_id': f'A{application.id:03d}'
+        })
+
+    except Application.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Application not found.'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': 'An error occurred while verifying the application.'
         })
 
 

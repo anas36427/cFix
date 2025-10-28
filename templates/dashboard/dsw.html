@@ -375,7 +375,7 @@ function setupEventListeners() {
 
 async function loadDSWApplications() {
     try {
-        const response = await fetch('/api/applications/', {
+        const response = await fetch('/accounts/applications/', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -488,7 +488,7 @@ function searchDSWApplications() {
 
 async function viewApplication(applicationId) {
     try {
-        const response = await fetch(`/api/applications/${applicationId}/`, {
+        const response = await fetch(`/accounts/applications/${applicationId}/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -547,7 +547,7 @@ async function updateApplicationStatus(applicationId, newStatus) {
     if (!newStatus) return;
 
     try {
-        const response = await fetch('/api/applications/update-status/', {
+        const response = await fetch('/accounts/applications/update-status/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -615,7 +615,7 @@ function showSection(sectionName) {
 async function loadAnalytics() {
     try {
         // Load applications analytics (only DSW applications)
-        const applicationsResponse = await fetch('/api/applications/', {
+        const applicationsResponse = await fetch('/accounts/applications/', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

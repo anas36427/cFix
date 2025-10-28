@@ -80,11 +80,11 @@
                 </svg>
                 Provost Complaints
             </a>
-            <a href="#" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 bg-gray-200" onclick="showSection('complaints')">
+            <a href="#" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100" onclick="showSection('applications')">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
-                Provost Complaints
+                Verify Applications
             </a>
             <a href="#" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100" onclick="showSection('analytics')">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -247,21 +247,9 @@
 
             <!-- Applications Management Section -->
             <div id="applications" class="fade-in" style="display: none;">
-                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm">Applications section is currently locked for Provost role. Provost handles complaints only.</p>
-                        </div>
-                    </div>
-                </div>
                 <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Applications Management</h2>
-                    <p class="text-gray-600">Manage and update application statuses</p>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Verify Applications</h2>
+                    <p class="text-gray-600">Review and verify applications before forwarding to respective departments</p>
                 </div>
 
                 <!-- Search and Filters -->
@@ -290,17 +278,19 @@
                             <option value="rejected">Rejected</option>
                         </select>
                         <select id="appCategoryFilter" class="px-4 py-2 border border-gray-300 rounded-md">
-                            
                             <option value="">All Categories</option>
-                            <option value="infrastructure">Infrastructure</option>
-                            <option value="food">Food Services</option>
-                            <option value="maintenance">Maintenance</option>
-                            <option value="security">Security</option>
+                            <option value="room-change">Room Change Request</option>
+                            <option value="library-subscription">Library Subscription</option>
+                            <option value="exam-revaluation">Exam Re-evaluation</option>
+                            <option value="fee-concession">Fee Concession</option>
                             <option value="other">Other</option>
-                            </select>
-                            <select id="appDepartmentFilter" class="px-4 py-2 border border-gray-300 rounded-md">
+                        </select>
+                        <select id="appDepartmentFilter" class="px-4 py-2 border border-gray-300 rounded-md">
                             <option value="">All Departments</option>
                             <option value="provost">Provost</option>
+                            <option value="dsw">DSW</option>
+                            <option value="exam_controller">Exam Controller</option>
+                            <option value="staff">Staff</option>
                         </select>
                     </div>
                 </div>
@@ -318,6 +308,7 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Verified</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
@@ -472,7 +463,7 @@ function setupEventListeners() {
 
 async function loadComplaints() {
     try {
-        const response = await fetch('/api/complaints/', {
+        const response = await fetch('/accounts/complaints/', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -485,7 +476,7 @@ async function loadComplaints() {
             const data = await response.json();
             if (data.success) {
                 allComplaints = data.complaints;
-                renderComplaints(allComplaints);
+                filterComplaints(); // Apply current filters after refresh
             } else {
                 console.error('Failed to load complaints:', data.message);
                 showMessage('Failed to load complaints: ' + data.message, 'error');
@@ -568,7 +559,7 @@ function filterComplaints() {
 
 async function viewComplaint(complaintId) {
     try {
-        const response = await fetch(`/api/complaints/${complaintId}/`, {
+        const response = await fetch(`/accounts/complaints/${complaintId}/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -628,7 +619,7 @@ async function updateComplaintStatus(complaintId, newStatus) {
     if (!newStatus) return;
 
     try {
-        const response = await fetch('/api/complaints/update-status/', {
+        const response = await fetch('/accounts/complaints/update-status/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -675,7 +666,7 @@ function showMessage(message, type) {
 
 function showSection(sectionName) {
     // Hide all sections
-    const sections = ['complaints', 'analytics'];
+    const sections = ['complaints', 'applications', 'analytics'];
     sections.forEach(section => {
         const element = document.getElementById(section);
         if (element) {
@@ -701,16 +692,18 @@ function showSection(sectionName) {
         clickedLink.classList.add('bg-gray-200');
     }
 
-    // Load data for analytics section if selected
+    // Load data for respective sections
     if (sectionName === 'analytics') {
         loadAnalytics();
+    } else if (sectionName === 'applications') {
+        loadApplications();
     }
 }
 
 async function loadAnalytics() {
     try {
         // Load complaints analytics (only Provost complaints)
-        const complaintsResponse = await fetch('/api/complaints/', {
+        const complaintsResponse = await fetch('/accounts/complaints/', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -748,7 +741,7 @@ function updateAnalytics(complaints, applications) {
 
 async function loadApplications() {
     try {
-        const response = await fetch('/api/applications/', {
+        const response = await fetch('/accounts/applications/', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -761,7 +754,7 @@ async function loadApplications() {
             const data = await response.json();
             if (data.success) {
                 allApplications = data.applications;
-                renderApplications(allApplications);
+                filterApplications(); // Apply current filters after refresh
             } else {
                 console.error('Failed to load applications:', data.message);
                 showMessage('Failed to load applications: ' + data.message, 'error');
@@ -803,8 +796,12 @@ function renderApplications(applications) {
                 </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${application.date}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                ${application.verified ? '<span class="text-green-600 font-semibold">✓ Verified</span>' : '<span class="text-red-600 font-semibold">✗ Not Verified</span>'}
+            </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <button onclick="viewApplication('${application.id}')" class="text-indigo-600 hover:text-indigo-900 mr-3">View</button>
+                ${!application.verified ? `<button onclick="verifyApplication('${application.id}')" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 mr-3">Verify</button>` : ''}
                 <select onchange="updateApplicationStatus('${application.id}', this.value)" class="text-sm border border-gray-300 rounded px-2 py-1">
                     <option value="">Change Status</option>
                     <option value="pending" ${application.status === 'pending' ? 'selected' : ''}>Pending</option>
@@ -860,7 +857,7 @@ function searchApplications() {
 
 async function viewApplication(applicationId) {
     try {
-        const response = await fetch(`/api/applications/${applicationId}/`, {
+        const response = await fetch(`/accounts/applications/${applicationId}/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -915,11 +912,44 @@ function showApplicationModal(application) {
     modal.classList.remove('hidden');
 }
 
+async function verifyApplication(applicationId) {
+    try {
+        const response = await fetch('/accounts/applications/verify/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                application_id: applicationId
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showMessage('Application verified successfully!', 'success');
+            // Update the application in our local array
+            const application = allApplications.find(a => a.id === applicationId);
+            if (application) {
+                application.verified = true;
+                filterApplications(); // Re-render with current filters
+            }
+        } else {
+            showMessage('Failed to verify application: ' + data.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error verifying application:', error);
+        showMessage('An error occurred while verifying the application.', 'error');
+    }
+}
+
 async function updateApplicationStatus(applicationId, newStatus) {
     if (!newStatus) return;
 
     try {
-        const response = await fetch('/api/applications/update-status/', {
+        const response = await fetch('/accounts/applications/update-status/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

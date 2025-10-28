@@ -828,7 +828,8 @@
                         showComplaintSuccessModal(); // Show success modal
                         loadData(); // Reload data
                     } else {
-                        alert('Error: ' + JSON.stringify(result.errors));
+                        const errorMessage = result.errors ? JSON.stringify(result.errors) : (result.message || 'Unknown error');
+                        alert('Error: ' + errorMessage);
                     }
                 } catch (error) {
                     console.error('Error submitting complaint:', error);
@@ -855,7 +856,8 @@
                         showApplicationSuccessModal(); // Show success modal
                         loadData(); // Reload data
                     } else {
-                        alert('Error: ' + JSON.stringify(result.errors));
+                        const errorMessage = result.errors ? JSON.stringify(result.errors) : (result.message || 'Unknown error');
+                        alert('Error: ' + errorMessage);
                     }
                 } catch (error) {
                     console.error('Error submitting application:', error);
@@ -1120,12 +1122,14 @@
             complaintCategoryFilter = document.getElementById('complaintCategoryFilter').value;
             complaintStatusFilter = document.getElementById('complaintStatusFilter').value;
             renderContent(); // Re-render the current view
+            attachEventListeners(); // Re-attach event listeners after re-rendering
         }
 
         // Update complaint search (debounced)
         const debouncedComplaintSearch = debounce(function() {
             complaintSearchQuery = document.getElementById('complaintSearchInput').value.trim();
             renderContent(); // Re-render the current view
+            attachEventListeners(); // Re-attach event listeners after re-rendering
         }, 300);
 
         // Update application filters
@@ -1133,12 +1137,14 @@
             applicationCategoryFilter = document.getElementById('applicationCategoryFilter').value;
             applicationStatusFilter = document.getElementById('applicationStatusFilter').value;
             renderContent(); // Re-render the current view
+            attachEventListeners(); // Re-attach event listeners after re-rendering
         }
 
         // Update application search (debounced)
         const debouncedApplicationSearch = debounce(function() {
             applicationSearchQuery = document.getElementById('applicationSearchInput').value.trim();
             renderContent(); // Re-render the current view
+            attachEventListeners(); // Re-attach event listeners after re-rendering
         }, 300);
 
         // Attach event listeners to dynamically created elements
@@ -1162,6 +1168,7 @@
                 complaintSearchButton.addEventListener('click', () => {
                     complaintSearchQuery = document.getElementById('complaintSearchInput').value.trim();
                     renderContent();
+                    attachEventListeners(); // Re-attach event listeners after re-rendering
                 });
             }
 
@@ -1184,6 +1191,7 @@
                 applicationSearchButton.addEventListener('click', () => {
                     applicationSearchQuery = document.getElementById('applicationSearchInput').value.trim();
                     renderContent();
+                    attachEventListeners(); // Re-attach event listeners after re-rendering
                 });
             }
         }
