@@ -36,6 +36,8 @@ def register_view(request):
 
 def login_view(request):
     if request.method == 'POST':
+        request.session.flush()
+
         form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
@@ -59,6 +61,7 @@ def login_view(request):
         else:
             pass  # Let the form handle the error message
     else:
+        request.session.flush()
         form = CustomAuthenticationForm()
     return render(request, 'accounts/login.html', {'form': form})
 
@@ -66,6 +69,7 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     messages.info(request, "You have been logged out successfully.")
+    request.session.flush()
     return redirect('login')
 
 
