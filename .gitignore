@@ -18,3 +18,4 @@ media/
 # Ignore OS and editor-specific files
 .DS_Store
 .vscode/
+.env
