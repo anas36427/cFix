@@ -6,16 +6,18 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables
-load_dotenv(BASE_DIR / '.env')  # Make sure .env is in the project root
+load_dotenv(BASE_DIR / '.env.production')  # Make sure .env is in the project root
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key')
 
 DEBUG = False
+#ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = [
     '3tpBpFTOpppLtck4.onrender.com',
     'anas36427.onrender.com',
     'localhost',  # optional, for local testing
+    '127.0.0.1',
 ]
 
 # Application definition
@@ -92,15 +94,26 @@ WSGI_APPLICATION = 'cFix.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'cfix_db',  # your MongoDB database name
-        'ENFORCE_SCHEMA': False,
+        'NAME': os.getenv('MONGO_DB_NAME', 'cfix_db'),
         'CLIENT': {
-            'host': 'mongodb+srv://<anas36427>:3tpBpFTOpppLtck4@<ClusterOfAnas>.mongodb.net/',
-            'retryWrites': True,
-            'w': 'majority'
+            'host': os.getenv('MONGO_URI'),
         }
     }
 }
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'djongo',
+#         'NAME': 'cfix_db',  # your MongoDB database name
+#         'ENFORCE_SCHEMA': False,
+#         'CLIENT': {
+#             'host': 'mongodb+srv://<anas36427>:3tpBpFTOpppLtck4@<ClusterOfAnas>.mongodb.net/',
+#             'retryWrites': True,
+#             'w': 'majority'
+#         }
+#     }
+# }
 
 # Password hashing
 PASSWORD_HASHERS = [
