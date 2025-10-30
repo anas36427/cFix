@@ -80,13 +80,25 @@ TEMPLATES = [
 WSGI_APPLICATION = 'cFix.wsgi.application'
 
 # MongoDB Configuration
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'djongo',
+#         'NAME': os.getenv('MONGO_DB_NAME', 'cfix_db'),
+#         'CLIENT': {
+#             'host': os.getenv('MONGO_URI', 'mongodb://localhost:27017/cfix_db'),
+#         },
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': os.getenv('MONGO_DB_NAME', 'cfix_db'),
+        'NAME': 'cfix_db',  # your MongoDB database name
+        'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': os.getenv('MONGO_URI', 'mongodb://localhost:27017/cfix_db'),
-        },
+            'host': 'mongodb+srv://<anas36427>:3tpBpFTOpppLtck4@<ClusterOfAnas>.mongodb.net/',
+            'retryWrites': True,
+            'w': 'majority'
+        }
     }
 }
 
