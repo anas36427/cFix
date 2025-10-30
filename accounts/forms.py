@@ -13,6 +13,7 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ('first_name', 'last_name', 'email', 'college_id', 'phone_number', 'role', 'password1', 'password2')
+    
 
 class CustomAuthenticationForm(AuthenticationForm):
     error_messages = {
@@ -20,8 +21,8 @@ class CustomAuthenticationForm(AuthenticationForm):
     }
     username_field = 'college_id'
 
-    username = forms.CharField(label="College ID", widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your College ID'}))
-    password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter your password'}))
+    username = forms.CharField(label="College ID", widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your College ID','autocomplete':'off'}))
+    password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter your password','autocomplete':'off'}))
 
 
 class ComplaintForm(forms.ModelForm):

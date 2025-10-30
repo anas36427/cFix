@@ -82,4 +82,11 @@
     <a href="{% url 'register' %}" class="text-white/80 hover:text-white transition-colors">Registration Guide</a>
   </div>
 </footer>
+<script
+window.onload = function() {
+    // Extra safety: clear any autofilled values
+    document.querySelectorAll('input').forEach(input => input.value = '');
+};
+</script>
+
 {% endblock %}

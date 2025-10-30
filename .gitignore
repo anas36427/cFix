@@ -1,13 +1,21 @@
-# Python / Django
-*.pyc
-__pycache__/
-db.sqlite3
+# Ignore environment variable files
 .env
+.env.local
+.env.production
+*.env
 
-# Virtual environment
+# Ignore virtual environment
 venv/
 
-# Static and media files
-/staticfiles/
-/media/
+# Ignore compiled files and caches
+__pycache__/
+*.pyc
 
+# Ignore static and collected files
+staticfiles/
+media/
+
+# Ignore OS and editor-specific files
+.DS_Store
+.vscode/
+.env

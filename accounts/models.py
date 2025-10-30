@@ -134,7 +134,7 @@ class Application(models.Model):
         ('provost', 'Provost/Hall Management'),
         ('library', 'Library'),
         ('examination', 'Examination Controller'),
-        ('accounts', 'Accounts'),
+        ('dean', 'Dean Academics'),
     ]
 
     STATUS_CHOICES = [
