@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import os
 import certifi
 from dotenv import load_dotenv
@@ -78,23 +79,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'cFix.wsgi.application'
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'djongo',
-    #     'NAME': os.getenv('MONGO_DB_NAME'),
-    #     'CLIENT': {
-    #         'host': os.getenv('MONGO_URI'),
-    #         # Use 'tls' instead of 'ssl' for modern PyMongo/Djongo compatibility
-    #         'tls': True, 
-    #         # Crucially, add the CA file for proper validation
-    #         'tlsCAFile': certifi.where(),
-    #         # Remove this line unless you have a specific, temporary need:
-    #         # 'tlsAllowInvalidCertificates': True, 
-    #         # Note: Djongo/PyMongo handles 'ssl_version' automatically.
-    #     }
-    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
