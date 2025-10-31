@@ -1,24 +1,20 @@
-from dotenv import load_dotenv
-import os
 from pathlib import Path
+import os
+import certifi
+from dotenv import load_dotenv
 
-# Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR.parent / '.env.production')  # 👈 this goes one level up
 
-# Load environment variables
-load_dotenv(BASE_DIR / '.env.production')  # Make sure .env is in the project root
+
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key')
 
 DEBUG = False
 #ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = [
-    '3tpBpFTOpppLtck4.onrender.com',
-    'anas36427.onrender.com',
-    'localhost',  # optional, for local testing
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost,.onrender.com,render.com").split(",")
 
 # Application definition
 INSTALLED_APPS = [
@@ -81,39 +77,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cFix.wsgi.application'
 
-# MongoDB Configuration
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'djongo',
-#         'NAME': os.getenv('MONGO_DB_NAME', 'cfix_db'),
-#         'CLIENT': {
-#             'host': os.getenv('MONGO_URI', 'mongodb://localhost:27017/cfix_db'),
-#         },
-#     }
-# }
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'djongo',
+    #     'NAME': os.getenv('MONGO_DB_NAME'),
+    #     'CLIENT': {
+    #         'host': os.getenv('MONGO_URI'),
+    #         # Use 'tls' instead of 'ssl' for modern PyMongo/Djongo compatibility
+    #         'tls': True, 
+    #         # Crucially, add the CA file for proper validation
+    #         'tlsCAFile': certifi.where(),
+    #         # Remove this line unless you have a specific, temporary need:
+    #         # 'tlsAllowInvalidCertificates': True, 
+    #         # Note: Djongo/PyMongo handles 'ssl_version' automatically.
+    #     }
+    # }
     'default': {
-        'ENGINE': 'djongo',
-        'NAME': os.getenv('MONGO_DB_NAME', 'cfix_db'),
-        'CLIENT': {
-            'host': os.getenv('MONGO_URI'),
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'djongo',
-#         'NAME': 'cfix_db',  # your MongoDB database name
-#         'ENFORCE_SCHEMA': False,
-#         'CLIENT': {
-#             'host': 'mongodb+srv://<anas36427>:3tpBpFTOpppLtck4@<ClusterOfAnas>.mongodb.net/',
-#             'retryWrites': True,
-#             'w': 'majority'
-#         }
-#     }
-# }
 
 # Password hashing
 PASSWORD_HASHERS = [
@@ -121,7 +105,6 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.Argon2PasswordHasher',
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-    'django.contrib.auth.hashers.ScryptPasswordHasher',
 ]
 
 AUTH_PASSWORD_VALIDATORS = [
